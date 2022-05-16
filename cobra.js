@@ -11,10 +11,13 @@ var ctx;
 var cabeca;
 var maca;
 var bola;
+var obstaculo;
 
 var pontos;
 var maca_x;
 var maca_y;
+var obst_x;
+var obst_y;
 
 var paraEsquerda = false;
 var paraDireita = false;
@@ -36,6 +39,7 @@ const TECLA_ABAIXO = 40;
 var x = [];
 var y = [];
 var macas = [];
+var obstaculos = [];
 
 onkeydown = verificarTecla; // Define função chamada ao se pressionar uma tecla
 
@@ -53,6 +57,7 @@ function iniciar() {
   carregarImagens();
   criarCobra();
   localizarMaca();
+  localizarObstaculo();
   setTimeout("cicloDeJogo()", ATRASO);
 }
 
@@ -65,6 +70,9 @@ function carregarImagens() {
 
   maca = new Image();
   maca.src = "img/maca.png";
+
+  obstaculo = new Image();
+  obstaculo.src = "img/obstaculo.png";
 }
 
 function criarCobra() {
@@ -75,8 +83,8 @@ function criarCobra() {
     y[z] = 100;
   }
 
-  var s = Math.floor(Math.random() * 4);
-  switch (s) {
+  let r = Math.floor(Math.random() * 4);
+  switch (r) {
     case 0:
       paraEsquerda = true;
       break;
@@ -93,13 +101,25 @@ function criarCobra() {
 
 function localizarMaca() {
   for (let i = 0; i < 15; i++) {
-    var r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
+    let r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     maca_x = r * TAMANHO_PONTO;
 
     r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     maca_y = r * TAMANHO_PONTO;
 
     macas[i] = [maca_x, maca_y];
+  }
+}
+
+function localizarObstaculo() {
+  for (let i = 0; i < 10; i++) {
+    let r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
+    obst_x = r * TAMANHO_PONTO;
+
+    r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
+    obst_y = r * TAMANHO_PONTO;
+
+    obstaculos[i] = [obst_x, obst_y];
   }
 }
 
@@ -129,6 +149,12 @@ function verificarMaca() {
 function verificarColisao() {
   for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
+      noJogo = false;
+    }
+  }
+
+  for (let obs of obstaculos) {
+    if (x[0] == obs[0] && y[0] == obs[1]) {
       noJogo = false;
     }
   }
@@ -182,7 +208,11 @@ function fazerDesenho() {
       ctx.drawImage(maca, m[0], m[1]);
     }
 
-    for (var z = 0; z < pontos; z++) {
+    for (let obs of obstaculos) {
+      ctx.drawImage(obstaculo, obs[0], obs[1]);
+    }
+
+    for (let z = 0; z < pontos; z++) {
       if (z == 0) {
         ctx.drawImage(cabeca, x[z], y[z]);
       } else {
