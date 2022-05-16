@@ -19,6 +19,8 @@ var maca_y;
 var obst_x;
 var obst_y;
 
+var vidas = 5;
+
 var paraEsquerda = false;
 var paraDireita = false;
 var paraCima = false;
@@ -26,10 +28,10 @@ var paraBaixo = false;
 var noJogo = true;
 
 const TAMANHO_PONTO = 10;
-const ALEATORIO_MAXIMO = 59;
+const ALEATORIO_MAXIMO = 29;
 const ATRASO = 140;
-const C_ALTURA = 600;
-const C_LARGURA = 600;
+const C_ALTURA = 300;
+const C_LARGURA = 300;
 
 const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
@@ -149,14 +151,19 @@ function verificarMaca() {
 function verificarColisao() {
   for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
-      noJogo = false;
+      vidas--;
     }
   }
 
-  for (let obs of obstaculos) {
-    if (x[0] == obs[0] && y[0] == obs[1]) {
-      noJogo = false;
+  for (let i in obstaculos) {
+    if (x[0] == obstaculos[i][0] && y[0] == obstaculos[i][1]) {
+      vidas--;
+      obstaculos.splice(i, 1);
     }
+  }
+
+  if (vidas == 0) {
+    noJogo = false;
   }
 
   if (y[0] >= C_ALTURA) {
@@ -229,7 +236,12 @@ function fimDeJogo() {
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
   ctx.font = "normal bold 18px serif";
-  ctx.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
+
+  if (macas.length == 0) {
+    ctx.fillText("Você Ganhou", C_LARGURA / 2, C_ALTURA / 2);
+  } else {
+    ctx.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
+  }
 }
 
 function verificarTecla(e) {
