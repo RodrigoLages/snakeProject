@@ -35,6 +35,7 @@ const TECLA_ABAIXO = 40;
 
 var x = [];
 var y = [];
+var macas = [];
 
 onkeydown = verificarTecla; // Define função chamada ao se pressionar uma tecla
 
@@ -69,7 +70,7 @@ function carregarImagens() {
 function criarCobra() {
   pontos = 3;
 
-  for (var z = 0; z < pontos; z++) {
+  for (let z = 0; z < pontos; z++) {
     x[z] = 100 - z * TAMANHO_PONTO;
     y[z] = 100;
   }
@@ -91,11 +92,15 @@ function criarCobra() {
 }
 
 function localizarMaca() {
-  var r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
-  maca_x = r * TAMANHO_PONTO;
+  for (let i = 0; i < 15; i++) {
+    var r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
+    maca_x = r * TAMANHO_PONTO;
 
-  r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
-  maca_y = r * TAMANHO_PONTO;
+    r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
+    maca_y = r * TAMANHO_PONTO;
+
+    macas[i] = [maca_x, maca_y];
+  }
 }
 
 function cicloDeJogo() {
@@ -109,14 +114,20 @@ function cicloDeJogo() {
 }
 
 function verificarMaca() {
-  if (x[0] == maca_x && y[0] == maca_y) {
-    pontos++;
-    localizarMaca();
+  for (let i in macas) {
+    if (x[0] == macas[i][0] && y[0] == macas[i][1]) {
+      pontos++;
+      macas.splice(i, 1);
+    }
+  }
+
+  if (macas.length == 0) {
+    noJogo = false;
   }
 }
 
 function verificarColisao() {
-  for (var z = pontos; z > 0; z--) {
+  for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
       noJogo = false;
     }
@@ -167,7 +178,9 @@ function fazerDesenho() {
   ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   if (noJogo) {
-    ctx.drawImage(maca, maca_x, maca_y);
+    for (let m of macas) {
+      ctx.drawImage(maca, m[0], m[1]);
+    }
 
     for (var z = 0; z < pontos; z++) {
       if (z == 0) {
