@@ -17,7 +17,7 @@ var maca_x;
 var maca_y;
 
 var paraEsquerda = false;
-var paraDireita = true;
+var paraDireita = false;
 var paraCima = false;
 var paraBaixo = false;
 var noJogo = true;
@@ -70,8 +70,23 @@ function criarCobra() {
   pontos = 3;
 
   for (var z = 0; z < pontos; z++) {
-    x[z] = 50 - z * TAMANHO_PONTO;
-    y[z] = 50;
+    x[z] = 100 - z * TAMANHO_PONTO;
+    y[z] = 100;
+  }
+
+  var s = Math.floor(Math.random() * 4);
+  switch (s) {
+    case 0:
+      paraEsquerda = true;
+      break;
+    case 1:
+      paraDireita = true;
+      break;
+    case 2:
+      paraCima = true;
+      break;
+    case 3:
+      paraBaixo = true;
   }
 }
 
@@ -108,19 +123,19 @@ function verificarColisao() {
   }
 
   if (y[0] >= C_ALTURA) {
-    noJogo = false;
+    y[0] = 0;
   }
 
   if (y[0] < 0) {
-    noJogo = false;
+    y[0] = C_ALTURA;
   }
 
   if (x[0] >= C_LARGURA) {
-    noJogo = false;
+    x[0] = 0;
   }
 
   if (x[0] < 0) {
-    noJogo = false;
+    x[0] = C_LARGURA;
   }
 }
 
