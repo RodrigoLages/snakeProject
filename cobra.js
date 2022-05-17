@@ -38,6 +38,9 @@ const TECLA_DIREITA = 39;
 const TECLA_ACIMA = 38;
 const TECLA_ABAIXO = 40;
 
+const time = document.getElementById("time");
+const lives = document.getElementById("lives");
+
 var x = [];
 var y = [];
 var macas = [];
@@ -140,6 +143,11 @@ function verificarMaca() {
     if (x[0] == macas[i][0] && y[0] == macas[i][1]) {
       pontos++;
       macas.splice(i, 1);
+
+      if (macas.length % 3 == 0) {
+        vidas++;
+        lives.innerHTML = "Vidas: " + vidas;
+      }
     }
   }
 
@@ -152,6 +160,7 @@ function verificarColisao() {
   for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
       vidas--;
+      lives.innerHTML = "Vidas: " + vidas;
     }
   }
 
@@ -159,6 +168,7 @@ function verificarColisao() {
     if (x[0] == obstaculos[i][0] && y[0] == obstaculos[i][1]) {
       vidas--;
       obstaculos.splice(i, 1);
+      lives.innerHTML = "Vidas: " + vidas;
     }
   }
 
