@@ -7,6 +7,8 @@
 
 var tela;
 var ctx;
+var time;
+var lives;
 
 var cabeca;
 var maca;
@@ -19,6 +21,7 @@ var maca_y;
 var obst_x;
 var obst_y;
 
+var tempo = 30;
 var vidas = 5;
 
 var paraEsquerda = false;
@@ -38,9 +41,6 @@ const TECLA_DIREITA = 39;
 const TECLA_ACIMA = 38;
 const TECLA_ABAIXO = 40;
 
-const time = document.getElementById("time");
-const lives = document.getElementById("lives");
-
 var x = [];
 var y = [];
 var macas = [];
@@ -53,6 +53,9 @@ iniciar(); // Chama função inicial do jogo
 // Definição das funções
 
 function iniciar() {
+  time = document.getElementById("time");
+  lives = document.getElementById("lives");
+
   tela = document.getElementById("tela");
   ctx = tela.getContext("2d");
 
@@ -64,6 +67,7 @@ function iniciar() {
   localizarMaca();
   localizarObstaculo();
   setTimeout("cicloDeJogo()", ATRASO);
+  setTimeout("tempoDeJogo()", 1000);
 }
 
 function carregarImagens() {
@@ -135,6 +139,19 @@ function cicloDeJogo() {
     mover();
     fazerDesenho();
     setTimeout("cicloDeJogo()", ATRASO);
+  }
+}
+
+function tempoDeJogo() {
+  if (noJogo) {
+    tempo--;
+    time.innerHTML = `Tempo: ${tempo}s`;
+    setTimeout("tempoDeJogo()", 1000);
+
+    if (tempo <= 0) {
+      noJogo = false;
+      fazerDesenho();
+    }
   }
 }
 
