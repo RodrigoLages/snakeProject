@@ -15,6 +15,11 @@ var maca;
 var bola;
 var obstaculo;
 
+var coletar;
+var dano;
+var morte;
+var ganhou;
+
 var pontos;
 var maca_x;
 var maca_y;
@@ -63,6 +68,7 @@ function iniciar() {
   ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   carregarImagens();
+  carregarAudio();
   criarCobra();
   localizarMaca();
   localizarObstaculo();
@@ -82,6 +88,16 @@ function carregarImagens() {
 
   obstaculo = new Image();
   obstaculo.src = "img/obstaculo.png";
+}
+
+function carregarAudio() {
+  coletar = new Audio("audio/pickup.wav");
+
+  dano = new Audio("audio/hit.wav");
+
+  morte = new Audio("audio/death.wav");
+
+  ganhou = new Audio("audio/win.wav");
 }
 
 function criarCobra() {
@@ -159,6 +175,7 @@ function verificarMaca() {
   for (let i in macas) {
     if (x[0] == macas[i][0] && y[0] == macas[i][1]) {
       pontos++;
+      coletar.play();
       macas.splice(i, 1);
 
       if (macas.length % 3 == 0) {
@@ -178,6 +195,7 @@ function verificarColisao() {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
       vidas--;
       lives.innerHTML = "Vidas: " + vidas;
+      dano.play();
     }
   }
 
@@ -186,6 +204,7 @@ function verificarColisao() {
       vidas--;
       obstaculos.splice(i, 1);
       lives.innerHTML = "Vidas: " + vidas;
+      dano.play();
     }
   }
 
@@ -265,8 +284,10 @@ function fimDeJogo() {
   ctx.font = "normal bold 18px serif";
 
   if (macas.length == 0) {
+    ganhou.play();
     ctx.fillText("Você Ganhou", C_LARGURA / 2, C_ALTURA / 2);
   } else {
+    morte.play();
     ctx.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
   }
 }
