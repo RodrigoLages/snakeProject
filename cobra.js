@@ -2,7 +2,7 @@
 // Autor: Jan Bodnar
 // Adaptado por: Gilson Pereira
 // Código fonte original: http://zetcode.com/javascript/snake/
-//Música: https://www.youtube.com/watch?v=0HxZn6CzOIo
+// Música de fundo: https://www.youtube.com/watch?v=0HxZn6CzOIo
 
 // Declaração de variáveis e constantes
 
@@ -28,8 +28,8 @@ var maca_y;
 var obst_x;
 var obst_y;
 
-var tempoTotal = 30;
-var tempo = tempoTotal;
+const tempoTotal = 65;
+var tempoRestante = tempoTotal;
 var vidas = 5;
 
 var paraEsquerda = false;
@@ -39,10 +39,10 @@ var paraBaixo = false;
 var noJogo = false;
 
 const TAMANHO_PONTO = 10;
-const ALEATORIO_MAXIMO = 29;
+const ALEATORIO_MAXIMO = 59;
 const ATRASO = 140;
-const C_ALTURA = 300;
-const C_LARGURA = 300;
+const C_ALTURA = 600;
+const C_LARGURA = 600;
 
 const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
@@ -56,7 +56,7 @@ var obstaculos = [];
 
 onkeydown = verificarTecla; // Define função chamada ao se pressionar uma tecla
 
-setup(); // Chama função inicial do jogo
+setup(); // Seta as config iniciais
 
 // Definição das funções
 
@@ -148,7 +148,7 @@ function criarCobra() {
 }
 
 function localizarMaca() {
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 27; i++) {
     let r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     maca_x = r * TAMANHO_PONTO;
 
@@ -160,7 +160,7 @@ function localizarMaca() {
 }
 
 function localizarObstaculo() {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 60; i++) {
     let r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     obst_x = r * TAMANHO_PONTO;
 
@@ -183,11 +183,11 @@ function cicloDeJogo() {
 
 function tempoDeJogo() {
   if (noJogo) {
-    tempo--;
-    time.innerHTML = `Tempo: ${tempo}s`;
+    tempoRestante--;
+    time.innerHTML = `Tempo: ${tempoRestante}s`;
     setTimeout("tempoDeJogo()", 1000);
 
-    if (tempo <= 0) {
+    if (tempoRestante <= 0) {
       noJogo = false;
       fazerDesenho();
     }
@@ -280,12 +280,12 @@ function fazerDesenho() {
   ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   if (noJogo) {
-    for (let m of macas) {
-      ctx.drawImage(maca, m[0], m[1]);
-    }
-
     for (let obs of obstaculos) {
       ctx.drawImage(obstaculo, obs[0], obs[1]);
+    }
+
+    for (let m of macas) {
+      ctx.drawImage(maca, m[0], m[1]);
     }
 
     for (let z = 0; z < pontos; z++) {
@@ -319,8 +319,8 @@ function fimDeJogo() {
 function verificarTecla(e) {
   var tecla = e.keyCode;
 
-  if (!noJogo && tempo == 30) {
-    iniciar();
+  if (!noJogo && tempoRestante == tempoTotal) {
+    iniciar(); // Chama função inicial do jogo
   }
 
   if (tecla == TECLA_ESQUERDA && !paraDireita) {
