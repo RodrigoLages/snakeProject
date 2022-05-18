@@ -2,6 +2,7 @@
 // Autor: Jan Bodnar
 // Adaptado por: Gilson Pereira
 // Código fonte original: http://zetcode.com/javascript/snake/
+//Música: https://www.youtube.com/watch?v=0HxZn6CzOIo
 
 // Declaração de variáveis e constantes
 
@@ -19,6 +20,7 @@ var coletar;
 var dano;
 var morte;
 var ganhou;
+var fundo;
 
 var pontos;
 var maca_x;
@@ -69,6 +71,7 @@ function iniciar() {
 
   carregarImagens();
   carregarAudio();
+  fundo.play();
   criarCobra();
   localizarMaca();
   localizarObstaculo();
@@ -98,6 +101,8 @@ function carregarAudio() {
   morte = new Audio("audio/death.wav");
 
   ganhou = new Audio("audio/win.wav");
+
+  fundo = new Audio("audio/background.wav");
 }
 
 function criarCobra() {
@@ -282,6 +287,7 @@ function fimDeJogo() {
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
   ctx.font = "normal bold 18px serif";
+  fundo.pause();
 
   if (macas.length == 0) {
     ganhou.play();
