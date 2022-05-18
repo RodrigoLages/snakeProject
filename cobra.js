@@ -28,14 +28,15 @@ var maca_y;
 var obst_x;
 var obst_y;
 
-var tempo = 30;
+var tempoTotal = 30;
+var tempo = tempoTotal;
 var vidas = 5;
 
 var paraEsquerda = false;
 var paraDireita = false;
 var paraCima = false;
 var paraBaixo = false;
-var noJogo = true;
+var noJogo = false;
 
 const TAMANHO_PONTO = 10;
 const ALEATORIO_MAXIMO = 29;
@@ -55,11 +56,11 @@ var obstaculos = [];
 
 onkeydown = verificarTecla; // Define função chamada ao se pressionar uma tecla
 
-iniciar(); // Chama função inicial do jogo
+setup(); // Chama função inicial do jogo
 
 // Definição das funções
 
-function iniciar() {
+function setup() {
   time = document.getElementById("time");
   lives = document.getElementById("lives");
 
@@ -68,6 +69,23 @@ function iniciar() {
 
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
+
+  ctx.fillStyle = "white";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  ctx.font = "normal bold 18px serif";
+  ctx.fillText(
+    "Aperte qualquer tecla para iniciar",
+    C_LARGURA / 2,
+    C_ALTURA / 2
+  );
+}
+
+function iniciar() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
+
+  noJogo = true;
 
   carregarImagens();
   carregarAudio();
@@ -300,6 +318,10 @@ function fimDeJogo() {
 
 function verificarTecla(e) {
   var tecla = e.keyCode;
+
+  if (!noJogo && tempo == 30) {
+    iniciar();
+  }
 
   if (tecla == TECLA_ESQUERDA && !paraDireita) {
     paraEsquerda = true;
