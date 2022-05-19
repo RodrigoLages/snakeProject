@@ -10,6 +10,7 @@ var tela;
 var ctx;
 var time;
 var lives;
+var list;
 
 var cabeca;
 var maca;
@@ -31,6 +32,8 @@ var obst_y;
 const tempoTotal = 65;
 var tempoRestante = tempoTotal;
 var vidas = 5;
+var nome;
+var pontuacao;
 
 var paraEsquerda = false;
 var paraDireita = false;
@@ -39,10 +42,10 @@ var paraBaixo = false;
 var noJogo = false;
 
 const TAMANHO_PONTO = 10;
-const ALEATORIO_MAXIMO = 59;
+const ALEATORIO_MAXIMO = 49;
 const ATRASO = 140;
-const C_ALTURA = 600;
-const C_LARGURA = 600;
+const C_ALTURA = 500;
+const C_LARGURA = 500;
 
 const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
@@ -51,10 +54,12 @@ const TECLA_ABAIXO = 40;
 
 var x = [];
 var y = [];
-var macas = [];
-var obstaculos = [];
+var listaDeMacas = [];
+var listaDeObstaculos = [];
+var listaDeJogadores;
+var listaDePontuacoes;
 
-onkeydown = verificarTecla; // Define função chamada ao se pressionar uma tecla
+onkeydown = verificarTecla; // Define função chamada ao se pressionar uma
 
 setup(); // Seta as config iniciais
 
@@ -63,7 +68,7 @@ setup(); // Seta as config iniciais
 function setup() {
   time = document.getElementById("time");
   lives = document.getElementById("lives");
-
+  list = document.getElementsByTagName("li");
   tela = document.getElementById("tela");
   ctx = tela.getContext("2d");
 
@@ -79,6 +84,13 @@ function setup() {
     C_LARGURA / 2,
     C_ALTURA / 2
   );
+
+  listaDeJogadores = localStorage.getItem("nomes").split(",");
+  listaDePontuacoes = localStorage.getItem("pontos").split(",");
+
+  for (let i in list) {
+    list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
+  }
 }
 
 function iniciar() {
@@ -155,7 +167,7 @@ function localizarMaca() {
     r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     maca_y = r * TAMANHO_PONTO;
 
-    macas[i] = [maca_x, maca_y];
+    listaDeMacas[i] = [maca_x, maca_y];
   }
 }
 
@@ -167,7 +179,7 @@ function localizarObstaculo() {
     r = Math.floor(Math.random() * ALEATORIO_MAXIMO);
     obst_y = r * TAMANHO_PONTO;
 
-    obstaculos[i] = [obst_x, obst_y];
+    listaDeObstaculos[i] = [obst_x, obst_y];
   }
 }
 
@@ -195,20 +207,20 @@ function tempoDeJogo() {
 }
 
 function verificarMaca() {
-  for (let i in macas) {
-    if (x[0] == macas[i][0] && y[0] == macas[i][1]) {
+  for (let i in listaDeMacas) {
+    if (x[0] == listaDeMacas[i][0] && y[0] == listaDeMacas[i][1]) {
       pontos++;
       coletar.play();
-      macas.splice(i, 1);
+      listaDeMacas.splice(i, 1);
 
-      if (macas.length % 3 == 0) {
+      if (listaDeMacas.length % 3 == 0) {
         vidas++;
         lives.innerHTML = "Vidas: " + vidas;
       }
     }
   }
 
-  if (macas.length == 0) {
+  if (listaDeMacas.length == 0) {
     noJogo = false;
   }
 }
@@ -222,10 +234,10 @@ function verificarColisao() {
     }
   }
 
-  for (let i in obstaculos) {
-    if (x[0] == obstaculos[i][0] && y[0] == obstaculos[i][1]) {
+  for (let i in listaDeObstaculos) {
+    if (x[0] == listaDeObstaculos[i][0] && y[0] == listaDeObstaculos[i][1]) {
       vidas--;
-      obstaculos.splice(i, 1);
+      listaDeObstaculos.splice(i, 1);
       lives.innerHTML = "Vidas: " + vidas;
       dano.play();
     }
@@ -280,11 +292,11 @@ function fazerDesenho() {
   ctx.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   if (noJogo) {
-    for (let obs of obstaculos) {
+    for (let obs of listaDeObstaculos) {
       ctx.drawImage(obstaculo, obs[0], obs[1]);
     }
 
-    for (let m of macas) {
+    for (let m of listaDeMacas) {
       ctx.drawImage(maca, m[0], m[1]);
     }
 
@@ -307,13 +319,34 @@ function fimDeJogo() {
   ctx.font = "normal bold 18px serif";
   fundo.pause();
 
-  if (macas.length == 0) {
+  if (listaDeMacas.length == 0) {
     ganhou.play();
     ctx.fillText("Você Ganhou", C_LARGURA / 2, C_ALTURA / 2);
+    registrarRanque();
   } else {
     morte.play();
     ctx.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
   }
+}
+
+function registrarRanque() {
+  nome = prompt("Digite seu nome");
+  pontuacao = tempoRestante;
+
+  for (let i in listaDePontuacoes) {
+    if (pontuacao > listaDePontuacoes[i]) {
+      listaDePontuacoes[i] = pontuacao;
+      listaDeJogadores[i] = nome;
+      break;
+    }
+  }
+
+  for (let i in list) {
+    list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
+  }
+
+  localStorage.setItem("nomes", listaDeJogadores.join(","));
+  localStorage.setItem("pontos", listaDePontuacoes.join(","));
 }
 
 function verificarTecla(e) {

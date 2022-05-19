@@ -4,5 +4,16 @@
 }
 
 #time {
-  padding-left: 445px;
+  padding-left: 340px;
+}
+
+#rank {
+  position: absolute;
+  top: 0;
+  left: 520px;
+}
+
+li {
+  margin-bottom: 25px;
+  font-size: 20px;
 }
