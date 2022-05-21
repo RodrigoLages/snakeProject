@@ -86,7 +86,7 @@ function setup() {
   );
 
   listaDeJogadores = localStorage.getItem("nomes").split(",");
-  listaDePontuacoes = localStorage.getItem("pontos").split(",");
+  listaDePontuacoes = localStorage.getItem("pontos").split(",").map(Number);
 
   for (let i in list) {
     list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
@@ -333,13 +333,7 @@ function registrarRanque() {
   nome = prompt("Digite seu nome");
   pontuacao = tempoRestante;
 
-  for (let i in listaDePontuacoes) {
-    if (pontuacao > listaDePontuacoes[i]) {
-      listaDePontuacoes[i] = pontuacao;
-      listaDeJogadores[i] = nome;
-      break;
-    }
-  }
+  ordenarRanque(nome, pontuacao);
 
   for (let i in list) {
     list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
@@ -379,4 +373,32 @@ function verificarTecla(e) {
     paraDireita = false;
     paraEsquerda = false;
   }
+}
+
+function ordenarRanque(N, P) {
+  listaDeJogadores[5] = N;
+  listaDePontuacoes[5] = P;
+
+  for (let i = 0; i < 5; i++) {
+    let maiorPontuacao = listaDePontuacoes[i];
+    let maiorNome = listaDeJogadores[i];
+    let posicao = i;
+
+    for (let j = i + 1; j < 6; j++) {
+      if (maiorPontuacao < listaDePontuacoes[j]) {
+        maiorPontuacao = listaDePontuacoes[j];
+        maiorNome = listaDeJogadores[j];
+        posicao = j;
+      }
+    }
+
+    listaDePontuacoes[posicao] = listaDePontuacoes[i];
+    listaDePontuacoes[i] = maiorPontuacao;
+
+    listaDeJogadores[posicao] = listaDeJogadores[i];
+    listaDeJogadores[i] = maiorNome;
+  }
+
+  listaDeJogadores.length = 5;
+  listaDePontuacoes.length = 5;
 }
