@@ -196,7 +196,7 @@ function cicloDeJogo() {
 function tempoDeJogo() {
   if (noJogo) {
     tempoRestante--;
-    time.innerHTML = `Tempo: ${tempoRestante}s`;
+    time.innerHTML = `Tempo:<br/>${tempoRestante}s`;
     setTimeout("tempoDeJogo()", 1000);
 
     if (tempoRestante <= 0) {
@@ -215,7 +215,7 @@ function verificarMaca() {
 
       if (listaDeMacas.length % 3 == 0) {
         vidas++;
-        lives.innerHTML = "Vidas: " + vidas;
+        lives.innerHTML = `Vidas:<br/>${vidas}`;
       }
     }
   }
@@ -229,7 +229,7 @@ function verificarColisao() {
   for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
       vidas--;
-      lives.innerHTML = "Vidas: " + vidas;
+      lives.innerHTML = `Vidas:<br/>${vidas}`;
       dano.play();
     }
   }
@@ -238,7 +238,7 @@ function verificarColisao() {
     if (x[0] == listaDeObstaculos[i][0] && y[0] == listaDeObstaculos[i][1]) {
       vidas--;
       listaDeObstaculos.splice(i, 1);
-      lives.innerHTML = "Vidas: " + vidas;
+      lives.innerHTML = `Vidas:<br/>${vidas}`;
       dano.play();
     }
   }
