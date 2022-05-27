@@ -365,10 +365,14 @@ function ordenarRanque() {
     score: pontuacao,
   };
 
-  for (var j = 3; j > 0 && ranque[j - 1].score < pontuacao; j--) {
+  ranque[5] = player;
+
+  for (var j = 4; j > 0 && ranque[j - 1].score < pontuacao; j--) {
     ranque[j] = ranque[j - 1];
   }
   ranque[j] = player;
+
+  ranque.length = 5;
 
   for (let i in ranque) {
     pageList[i].innerHTML = ranque[i].score + " - " + ranque[i].nome;
