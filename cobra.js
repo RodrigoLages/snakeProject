@@ -8,9 +8,10 @@
 
 var tela;
 var ctx;
-var time;
-var lives;
-var list;
+var pageLives;
+var pageTime;
+var pageScore;
+var pageList;
 
 var cabeca;
 var maca;
@@ -32,8 +33,7 @@ var obst_y;
 const tempoTotal = 65;
 var tempoRestante = tempoTotal;
 var vidas = 5;
-var nome;
-var pontuacao;
+var pontuacao = 0;
 
 var paraEsquerda = false;
 var paraDireita = false;
@@ -56,8 +56,8 @@ var x = [];
 var y = [];
 var listaDeMacas = [];
 var listaDeObstaculos = [];
-var listaDeJogadores;
-var listaDePontuacoes;
+
+var ranque;
 
 onkeydown = verificarTecla; // Define função chamada ao se pressionar uma
 
@@ -66,9 +66,10 @@ setup(); // Seta as config iniciais
 // Definição das funções
 
 function setup() {
-  time = document.getElementById("time");
-  lives = document.getElementById("lives");
-  list = document.getElementsByTagName("li");
+  pageTime = document.getElementById("time");
+  pageLives = document.getElementById("lives");
+  pageScore = document.getElementById("score");
+  pageList = document.getElementsByTagName("li");
   tela = document.getElementById("tela");
   ctx = tela.getContext("2d");
 
@@ -78,19 +79,14 @@ function setup() {
   ctx.fillStyle = "white";
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
-  ctx.font = "normal bold 18px serif";
+  ctx.font = "normal bold 18px courier";
   ctx.fillText(
     "Aperte qualquer tecla para iniciar",
     C_LARGURA / 2,
     C_ALTURA / 2
   );
 
-  listaDeJogadores = localStorage.getItem("nomes").split(",");
-  listaDePontuacoes = localStorage.getItem("pontos").split(",").map(Number);
-
-  for (let i in list) {
-    list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
-  }
+  carregarRanque();
 }
 
 function iniciar() {
@@ -133,6 +129,29 @@ function carregarAudio() {
   ganhou = new Audio("audio/win.wav");
 
   fundo = new Audio("audio/background.wav");
+}
+
+function carregarRanque() {
+  ranque = JSON.parse(localStorage.getItem("players"));
+
+  if (ranque === null) {
+    let defaultPlayer = {
+      nome: "___",
+      score: 0,
+    };
+
+    ranque = [
+      defaultPlayer,
+      defaultPlayer,
+      defaultPlayer,
+      defaultPlayer,
+      defaultPlayer,
+    ];
+  }
+
+  for (let i in ranque) {
+    pageList[i].innerHTML = ranque[i].score + " - " + ranque[i].nome;
+  }
 }
 
 function criarCobra() {
@@ -196,7 +215,10 @@ function cicloDeJogo() {
 function tempoDeJogo() {
   if (noJogo) {
     tempoRestante--;
-    time.innerHTML = `Tempo:<br/>${tempoRestante}s`;
+    pontuacao += vidas * 10;
+
+    pageScore.innerHTML = `Score:<br/>${pontuacao}`;
+    pageTime.innerHTML = `Tempo:<br/>${tempoRestante}s`;
     setTimeout("tempoDeJogo()", 1000);
 
     if (tempoRestante <= 0) {
@@ -215,7 +237,7 @@ function verificarMaca() {
 
       if (listaDeMacas.length % 3 == 0) {
         vidas++;
-        lives.innerHTML = `Vidas:<br/>${vidas}`;
+        pageLives.innerHTML = `Vidas:<br/>${vidas}`;
       }
     }
   }
@@ -229,7 +251,7 @@ function verificarColisao() {
   for (let z = pontos; z > 0; z--) {
     if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
       vidas--;
-      lives.innerHTML = `Vidas:<br/>${vidas}`;
+      pageLives.innerHTML = `Vidas:<br/>${vidas}`;
       dano.play();
     }
   }
@@ -238,7 +260,7 @@ function verificarColisao() {
     if (x[0] == listaDeObstaculos[i][0] && y[0] == listaDeObstaculos[i][1]) {
       vidas--;
       listaDeObstaculos.splice(i, 1);
-      lives.innerHTML = `Vidas:<br/>${vidas}`;
+      pageLives.innerHTML = `Vidas:<br/>${vidas}`;
       dano.play();
     }
   }
@@ -316,31 +338,43 @@ function fimDeJogo() {
   ctx.fillStyle = "white";
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
-  ctx.font = "normal bold 18px serif";
+  ctx.font = "normal bold 18px courier";
   fundo.pause();
 
   if (listaDeMacas.length == 0) {
     ganhou.play();
     ctx.fillText("Você Ganhou", C_LARGURA / 2, C_ALTURA / 2);
-    registrarRanque();
+
+    pontuacao += tempoRestante * 200;
+    pageScore.innerHTML = `Score:<br/>${pontuacao}`;
   } else {
     morte.play();
     ctx.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
   }
+
+  ordenarRanque();
 }
 
-function registrarRanque() {
-  nome = prompt("Digite seu nome");
-  pontuacao = tempoRestante;
-
-  ordenarRanque(nome, pontuacao);
-
-  for (let i in list) {
-    list[i].innerHTML = listaDePontuacoes[i] + "s - " + listaDeJogadores[i];
+function ordenarRanque() {
+  if (pontuacao < ranque[4].score) {
+    return;
   }
 
-  localStorage.setItem("nomes", listaDeJogadores.join(","));
-  localStorage.setItem("pontos", listaDePontuacoes.join(","));
+  let player = {
+    nome: prompt("Digite seu nome"),
+    score: pontuacao,
+  };
+
+  for (var j = 3; j > 0 && ranque[j - 1].score < pontuacao; j--) {
+    ranque[j] = ranque[j - 1];
+  }
+  ranque[j] = player;
+
+  for (let i in ranque) {
+    pageList[i].innerHTML = ranque[i].score + " - " + ranque[i].nome;
+  }
+
+  localStorage.setItem("players", JSON.stringify(ranque));
 }
 
 function verificarTecla(e) {
@@ -373,32 +407,4 @@ function verificarTecla(e) {
     paraDireita = false;
     paraEsquerda = false;
   }
-}
-
-function ordenarRanque(N, P) {
-  listaDeJogadores[5] = N;
-  listaDePontuacoes[5] = P;
-
-  for (let i = 0; i < 5; i++) {
-    let maiorPontuacao = listaDePontuacoes[i];
-    let maiorNome = listaDeJogadores[i];
-    let posicao = i;
-
-    for (let j = i + 1; j < 6; j++) {
-      if (maiorPontuacao < listaDePontuacoes[j]) {
-        maiorPontuacao = listaDePontuacoes[j];
-        maiorNome = listaDeJogadores[j];
-        posicao = j;
-      }
-    }
-
-    listaDePontuacoes[posicao] = listaDePontuacoes[i];
-    listaDePontuacoes[i] = maiorPontuacao;
-
-    listaDeJogadores[posicao] = listaDeJogadores[i];
-    listaDeJogadores[i] = maiorNome;
-  }
-
-  listaDeJogadores.length = 5;
-  listaDePontuacoes.length = 5;
 }
