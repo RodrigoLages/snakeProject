@@ -32,8 +32,7 @@ var maca_y;
 var obst_x;
 var obst_y;
 
-const tempoTotal = 65;
-var tempoRestante = tempoTotal;
+var tempoRestante = 65;
 var vidas = 5;
 var pontuacao = 0;
 
@@ -55,6 +54,7 @@ const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
 const TECLA_ACIMA = 38;
 const TECLA_ABAIXO = 40;
+const TECLA_ESPACO = 32;
 const TECLA_ENTER = 13;
 
 var x = [];
@@ -256,9 +256,7 @@ function verificarMaca() {
     }
   }
 
-  if (listaDeMacas.length == 0) {
-    noJogo = false;
-  }
+  if (listaDeMacas.length == 0) noJogo = false;
 }
 
 function verificarColisao() {
@@ -279,25 +277,15 @@ function verificarColisao() {
     }
   }
 
-  if (vidas == 0) {
-    noJogo = false;
-  }
+  if (vidas <= 0) noJogo = false;
 
-  if (y[0] >= C_ALTURA) {
-    y[0] = 0;
-  }
+  if (y[0] >= C_ALTURA) y[0] = 0;
 
-  if (y[0] < 0) {
-    y[0] = C_ALTURA;
-  }
+  if (y[0] < 0) y[0] = C_ALTURA;
 
-  if (x[0] >= C_LARGURA) {
-    x[0] = 0;
-  }
+  if (x[0] >= C_LARGURA) x[0] = 0;
 
-  if (x[0] < 0) {
-    x[0] = C_LARGURA;
-  }
+  if (x[0] < 0) x[0] = C_LARGURA;
 }
 
 function mover() {
@@ -306,21 +294,13 @@ function mover() {
     y[z] = y[z - 1];
   }
 
-  if (paraEsquerda) {
-    x[0] -= TAMANHO_PONTO;
-  }
+  if (paraEsquerda) x[0] -= TAMANHO_PONTO;
 
-  if (paraDireita) {
-    x[0] += TAMANHO_PONTO;
-  }
+  if (paraDireita) x[0] += TAMANHO_PONTO;
 
-  if (paraCima) {
-    y[0] -= TAMANHO_PONTO;
-  }
+  if (paraCima) y[0] -= TAMANHO_PONTO;
 
-  if (paraBaixo) {
-    y[0] += TAMANHO_PONTO;
-  }
+  if (paraBaixo) y[0] += TAMANHO_PONTO;
 }
 
 function fazerDesenho() {
@@ -378,8 +358,8 @@ function mostrarNome() {
 
   if (escolhendoNome) {
     ctx.fillText(mensagem, C_LARGURA / 2, C_ALTURA / 5);
-    ctx.fillText("Insira seu nome", C_LARGURA / 2, C_ALTURA / 4);
-    ctx.fillText(jogador.padEnd(3, "_"), C_LARGURA / 2, (3 * C_ALTURA) / 4);
+    ctx.fillText("Insira suas iniciais", C_LARGURA / 2, C_ALTURA / 4);
+    ctx.fillText(jogador.padEnd(3, "-"), C_LARGURA / 2, (3 * C_ALTURA) / 4);
 
     ctx.font = "normal bold 50px courier";
     ctx.fillText(`◄ ${alfabeto[contador]} ►`, C_LARGURA / 2, C_ALTURA / 2);
@@ -390,9 +370,7 @@ function mostrarNome() {
 }
 
 function ordenarRanque() {
-  if (pontuacao < ranque[4].score) {
-    return;
-  }
+  if (pontuacao < ranque[4].score) return;
 
   let player = {
     nome: jogador,
@@ -401,6 +379,7 @@ function ordenarRanque() {
 
   ranque[5] = player;
 
+  //Insertion sort
   for (var j = 4; j > 0 && ranque[j - 1].score < pontuacao; j--) {
     ranque[j] = ranque[j - 1];
   }
@@ -418,9 +397,7 @@ function ordenarRanque() {
 function verificarTecla(e) {
   var tecla = e.keyCode;
 
-  if (antesDoJogo) {
-    iniciar(); // Chama função inicial do jogo
-  }
+  if (antesDoJogo) iniciar(); // Chama função inicial do jogo
 
   if (tecla == TECLA_ESQUERDA && !paraDireita) {
     paraEsquerda = true;
@@ -446,6 +423,7 @@ function verificarTecla(e) {
     paraEsquerda = false;
   }
 
+  //Durante a escolha de nome
   if (escolhendoNome) {
     if (tecla == TECLA_ESQUERDA) {
       selecionar.play();
@@ -461,13 +439,11 @@ function verificarTecla(e) {
       if (contador >= alfabeto.length) contador = 0;
     }
 
-    if (tecla == TECLA_ENTER) {
+    if (tecla == TECLA_ENTER || tecla == TECLA_ESPACO) {
       enter.play();
       jogador += alfabeto[contador];
 
-      if (jogador.length == 3) {
-        escolhendoNome = false;
-      }
+      if (jogador.length >= 3) escolhendoNome = false;
     }
 
     mostrarNome();
